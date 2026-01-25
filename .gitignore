@@ -1,0 +1,6 @@
+pycache/
+.pychache
+__pycache__/
+*.pyc
+venv/
+work_file.txt
