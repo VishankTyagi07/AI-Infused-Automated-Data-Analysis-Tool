@@ -1,0 +1,9 @@
+streamlit
+pandas
+numpy
+ydata-profiling
+plotly
+matplotlib
+sqlalchemy
+openai
+python-dotenv

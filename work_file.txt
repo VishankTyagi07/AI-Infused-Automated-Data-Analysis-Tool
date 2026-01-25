@@ -1,0 +1,2 @@
+first i need a function that takes in a datset
+then i need to profile that dataset
