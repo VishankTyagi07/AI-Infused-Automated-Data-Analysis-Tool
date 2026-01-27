@@ -81,3 +81,161 @@ def generate_dataset_summary(metadata: dict) -> str:
 
     return "\n\n".join(summary_parts)
 
+# Generate cleaning process summary
+def cleaning_process_summary(metadata: dict) -> str:
+    flags = metadata["flags"]
+
+    summary = [
+        "### Cleaning Process Overview",
+        "When you proceed, the dataset will undergo the following steps:",
+        "- Column names will be standardized",
+        "- Common missing value patterns will be normalized",
+        "- Data types will be inferred automatically (numeric, datetime, categorical)",
+        "- Duplicate records will be removed",
+    ]
+
+    if flags["high_missing_columns"]:
+        summary.append(
+            f"- Columns with high missing values detected: {', '.join(flags['high_missing_columns'])}"
+        )
+
+    if flags["possible_id_columns"]:
+        summary.append(
+            f"- Identifier-like columns detected: {', '.join(flags['possible_id_columns'])}"
+        )
+
+    summary.append(
+        "This process improves data consistency and prepares the dataset for analysis."
+    )
+
+    return "\n".join(summary)
+
+
+def generate_cleaning_result_summary(original_df, cleaned_df) -> str:
+    summary = []
+
+    summary.append("### Cleaning Results Summary")
+
+    # Rows
+    if len(original_df) != len(cleaned_df):
+        summary.append(
+            f"- Removed {len(original_df) - len(cleaned_df)} duplicate rows."
+        )
+
+    # Columns
+    removed_cols = set(original_df.columns) - set(cleaned_df.columns)
+    if removed_cols:
+        summary.append(
+            f"-Cleaned columns: {', '.join(removed_cols)}."
+        )
+
+    # Type changes
+    type_changes = []
+    for col in cleaned_df.columns:
+        if col in original_df.columns:
+            if original_df[col].dtype != cleaned_df[col].dtype:
+                type_changes.append(
+                    f"{col} → {cleaned_df[col].dtype}"
+                )
+
+    if type_changes:
+        summary.append(
+            "- Inferred and standardized data types:\n  - "
+            + "\n  - ".join(type_changes)
+        )
+
+    if len(summary) == 1:
+        summary.append("- No structural changes detected.")
+
+    summary.append("The dataset is now standardized and ready for analysis.")
+
+    return "\n".join(summary)
+
+def generate_profile_summary(metadata: dict) -> str:
+    cols = metadata["columns"]
+    flags = metadata["flags"]
+
+    lines = [
+        "### Profiling Report Overview",
+        "This process will generate an exploratory profiling report containing:",
+        "- Dataset shape and structure",
+        "- Column-wise statistics and data types",
+        "- Missing value analysis",
+        "- Distribution summaries for numeric variables",
+        "- Frequency analysis for categorical variables",
+    ]
+
+    if flags["high_missing_columns"]:
+        lines.append(
+            f"- High missing values detected in: {', '.join(flags['high_missing_columns'])}"
+        )
+
+    if flags["possible_id_columns"]:
+        lines.append(
+            f"- Identifier-like columns detected: {', '.join(flags['possible_id_columns'])}"
+        )
+
+    lines.append(
+        "The report is intended for human exploration and data quality inspection."
+    )
+
+    return "\n".join(lines)
+
+def generate_sql_summary(metadata: dict) -> str:
+    flags = metadata["flags"]
+
+    lines = [
+        "### SQL Generation Overview",
+        "This process will generate exploratory SQL queries for:",
+        "- Basic dataset inspection",
+        "- Descriptive statistics on numeric columns",
+        "- Frequency analysis of categorical columns",
+        "- Missing value checks",
+    ]
+
+    if flags["possible_id_columns"]:
+        lines.append(
+            f"- Identifier-like columns detected: {', '.join(flags['possible_id_columns'])} "
+            "(these will be excluded from aggregations)"
+        )
+
+    if flags["high_missing_columns"]:
+        lines.append(
+            f"- Columns with high missing values: {', '.join(flags['high_missing_columns'])}"
+        )
+
+    lines.append(
+        "The queries are database-agnostic and can be adapted to most SQL engines."
+    )
+
+    return "\n".join(lines)
+
+def generate_viz_summary(df) -> str:
+    numeric_cols = df.select_dtypes(include="number").columns.tolist()
+    categorical_cols = df.select_dtypes(include="object").columns.tolist()
+    datetime_cols = df.select_dtypes(include="datetime").columns.tolist()
+
+    lines = [
+        "### Visualization Plan",
+        "The system will automatically generate visual insights including:",
+    ]
+
+    if numeric_cols:
+        lines.append(f"- Distributions for numeric columns: {', '.join(numeric_cols)}")
+
+    if categorical_cols:
+        lines.append(
+            f"- Frequency charts for categorical columns: {', '.join(categorical_cols)}"
+        )
+
+    if len(numeric_cols) > 1:
+        lines.append("- Correlation heatmap for numeric features")
+
+    if datetime_cols:
+        lines.append(f"- Time-series trends for: {', '.join(datetime_cols)}")
+
+    lines.append(
+        "These visualizations help identify patterns, outliers, and relationships."
+    )
+
+    return "\n".join(lines)
