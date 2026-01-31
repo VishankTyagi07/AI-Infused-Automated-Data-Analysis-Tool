@@ -4,6 +4,7 @@ by providing dictionary with json data.
 '''
 import pandas as pd
 import numpy as np
+from ydata_profiling import ProfileReport
 
 def profile_dataset(df: pd.DataFrame) -> dict:
  
@@ -60,3 +61,9 @@ def profile_dataset(df: pd.DataFrame) -> dict:
             profile_data["flags"]["possible_id_columns"].append(col)
 
     return profile_data
+
+
+
+def generate_profile_report(df):
+    profile = ProfileReport(df, explorative=True)
+    return profile.to_html()
