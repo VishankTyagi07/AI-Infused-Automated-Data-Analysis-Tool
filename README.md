@@ -85,7 +85,7 @@ UI state management ensures outputs are context-aware and do not persist incorre
 
 ## Project Structure
 
-AI-Infused Automated Data Analysis Tool
+```AI-Infused Automated Data Analysis Tool
 ├── app.py                      # Streamlit application
 ├── ai/
 │   └── rule_based_summary.py   # Explainability layer
@@ -99,7 +99,7 @@ AI-Infused Automated Data Analysis Tool
 │   ├── visualizer.py           # Visualization engine
 │   └── exporter.py             # HTML dashboard export
 └── requirements.txt
-
+```
 
 ## Design Principles
 
